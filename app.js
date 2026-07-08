@@ -1,8 +1,7 @@
-// Devide App - Permanent Storage with Full Screen Preview
+// Devide App - Permanent Storage with Automatic Full Screen View
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSavedFiles();
-    createFullViewModal(); // Full screen view ka box taiyar karna
 });
 
 document.getElementById('fileUpload').addEventListener('change', function(event) {
@@ -48,49 +47,59 @@ function createMediaCard(fileData) {
     card.style.cssText = 'border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px; text-align: center; background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; display: inline-block; width: 140px; vertical-align: top; cursor: pointer;';
 
     if (fileData.type === 'image') {
-        // Img par onclick lagaya h full view ke liye
         card.innerHTML = `
-            <img src="${fileData.src}" onclick="openFullView('${fileData.src}')" alt="${fileData.name}" style="width: 100%; height: 100px; border-radius: 4px; object-fit: cover;">
+            <img src="${fileData.src}" class="clickable-img" alt="${fileData.name}" style="width: 100%; height: 100px; border-radius: 4px; object-fit: cover;">
             <p style="font-size: 11px; margin-top: 8px; color: #333; word-break: break-all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fileData.name}</p>
-            <button onclick="event.stopPropagation(); deleteFile(${fileData.id})" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px; z-index: 10;">X</button>
+            <button class="delete-btn" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px; z-index: 10;">X</button>
         `;
+
+        // Direct photo par click event lagana
+        card.querySelector('.clickable-img').addEventListener('click', function() {
+            openDirectFullView(fileData.src);
+        });
+
+        // Delete button ka event
+        card.querySelector('.delete-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            deleteFile(fileData.id);
+        });
+
     } else {
         card.innerHTML = `
             <div style="font-size: 40px; color: #28a745;">📄</div>
             <p style="font-size: 11px; margin-top: 8px; color: #333; word-break: break-all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fileData.name}</p>
-            <button onclick="event.stopPropagation(); deleteFile(${fileData.id})" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px; z-index: 10;">X</button>
+            <button class="delete-btn" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px; z-index: 10;">X</button>
         `;
+        
+        card.querySelector('.delete-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            deleteFile(fileData.id);
+        });
     }
 
     mediaGrid.appendChild(card);
 }
 
-// Full Screen View Box (Modal) HTML me jodhna
-function createFullViewModal() {
-    if (!document.getElementById('fullViewModal')) {
-        const modal = document.createElement('div');
-        modal.id = 'fullViewModal';
-        modal.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center;';
-        modal.innerHTML = `
-            <span onclick="closeFullView()" style="position: absolute; top: 20px; right: 25px; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer;">&times;</span>
-            <img id="fullViewImg" src="" style="max-width: 90%; max-height: 80%; border-radius: 8px; box-shadow: 0 0 20px rgba(21, 150, 240, 0.5);">
-        `;
+// Ekdum simple direct full view banane ka tarika
+function openDirectFullView(src) {
+    let modal = document.getElementById('dynamicModal');
+    
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'dynamicModal';
+        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; display: flex; justify-content: center; align-items: center; cursor: pointer;';
+        modal.innerHTML = '<img id="dynamicImg" src="" style="max-width: 95%; max-height: 85%; border-radius: 8px; box-shadow: 0 0 20px rgba(255,255,255,0.2);">';
+        
+        // Pura kali screen par kahi bhi click karo toh band ho jaye
+        modal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
         document.body.appendChild(modal);
     }
-}
-
-function openFullView(src) {
-    const modal = document.getElementById('fullViewModal');
-    const modalImg = document.getElementById('fullViewImg');
-    if (modal && modalImg) {
-        modalImg.src = src;
-        modal.style.display = 'flex';
-    }
-}
-
-function closeFullView() {
-    const modal = document.getElementById('fullViewModal');
-    if (modal) modal.style.display = 'none';
+    
+    document.getElementById('dynamicImg').src = src;
+    modal.style.display = 'flex';
 }
 
 function saveFileToLocalStorage(fileData) {
@@ -118,8 +127,4 @@ function deleteFile(id) {
         const emptyMsg = document.querySelector('.empty-msg');
         if (emptyMsg) emptyMsg.style.display = 'block';
     }
-}
-
-function filterCategory(category) {
-    console.log("Filter changed to: " + category);
 }
