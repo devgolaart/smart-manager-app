@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Manager App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <h1>Smart Manager</h1>
+        <p>Your AI-Powered Free Storage</p>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        
+        <!-- Search Bar with Voice Feature -->
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search photos, faces, or docs...">
+            <button id="voiceBtn" class="btn-icon">🎤</button>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="categories">
+            <button class="tab-btn active" onclick="filterCategory('all')">All</button>
+            <button class="tab-btn" onclick="filterCategory('photo')">Photos</button>
+            <button class="tab-btn" onclick="filterCategory('doc')">Documents</button>
+        </div>
+
+        <!-- Upload Button -->
+        <div class="upload-section">
+            <label for="fileUpload" class="upload-btn">
+                ➕ Upload File (Photo / PDF)
+            </label>
+            <input type="file" id="fileUpload" accept="image/*, application/pdf" style="display: none;">
+        </div>
+
+        <!-- Gallery / File Display Grid -->
+        <div class="media-grid" id="mediaGrid">
+            <!-- Uploaded files yahan dikhenge -->
+            <p class="empty-msg">No files uploaded yet. Click plus to add!</p>
+        </div>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
