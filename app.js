@@ -1,42 +1,42 @@
-// Devide App - Permanent Local Storage System
+// Devide App - Permanent Storage with Full Screen Preview
 
-// 1. Page load hote hi purani saved photos ko load karna
-document.addEventListener('DOMContentLoaded', loadSavedFiles);
+document.addEventListener('DOMContentLoaded', () => {
+    loadSavedFiles();
+    createFullViewModal(); // Full screen view ka box taiyar karna
+});
 
 document.getElementById('fileUpload').addEventListener('change', function(event) {
-    const file = event.target.files[0];
+    const files = event.target.files;
     
-    if (file) {
-        if (file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const fileData = {
-                    id: Date.now(),
-                    name: file.name,
-                    src: e.target.result,
-                    type: 'image'
+    if (files.length > 0) {
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileData = {
+                        id: Date.now() + Math.random(),
+                        name: file.name,
+                        src: e.target.result,
+                        type: 'image'
+                    };
+                    createMediaCard(fileData);
+                    saveFileToLocalStorage(fileData);
                 };
-                
-                // Screen par dikhao aur local storage me save karo
+                reader.readAsDataURL(file);
+            } else {
+                const fileData = {
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    src: '',
+                    type: 'doc'
+                };
                 createMediaCard(fileData);
                 saveFileToLocalStorage(fileData);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            // PDF ya anya documents ke liye
-            const fileData = {
-                id: Date.now(),
-                name: file.name,
-                src: '',
-                type: 'doc'
-            };
-            createMediaCard(fileData);
-            saveFileToLocalStorage(fileData);
-        }
+            }
+        });
     }
 });
 
-// Screen par Card banane ka function
 function createMediaCard(fileData) {
     const emptyMsg = document.querySelector('.empty-msg');
     if (emptyMsg) emptyMsg.style.display = 'none';
@@ -45,33 +45,60 @@ function createMediaCard(fileData) {
     const card = document.createElement('div');
     card.className = 'media-card';
     card.setAttribute('data-id', fileData.id);
-    card.style.cssText = 'border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px; text-align: center; background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative;';
+    card.style.cssText = 'border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px; text-align: center; background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; display: inline-block; width: 140px; vertical-align: top; cursor: pointer;';
 
     if (fileData.type === 'image') {
+        // Img par onclick lagaya h full view ke liye
         card.innerHTML = `
-            <img src="${fileData.src}" alt="${fileData.name}" style="max-width: 100%; max-height: 150px; border-radius: 4px; object-fit: cover;">
-            <p style="font-size: 12px; margin-top: 8px; color: #333; word-break: break-all;">${fileData.name}</p>
-            <button onclick="deleteFile(${fileData.id})" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px;">X</button>
+            <img src="${fileData.src}" onclick="openFullView('${fileData.src}')" alt="${fileData.name}" style="width: 100%; height: 100px; border-radius: 4px; object-fit: cover;">
+            <p style="font-size: 11px; margin-top: 8px; color: #333; word-break: break-all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fileData.name}</p>
+            <button onclick="event.stopPropagation(); deleteFile(${fileData.id})" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px; z-index: 10;">X</button>
         `;
     } else {
         card.innerHTML = `
             <div style="font-size: 40px; color: #28a745;">📄</div>
-            <p style="font-size: 12px; margin-top: 8px; color: #333; word-break: break-all;">${fileData.name}</p>
-            <button onclick="deleteFile(${fileData.id})" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px;">X</button>
+            <p style="font-size: 11px; margin-top: 8px; color: #333; word-break: break-all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fileData.name}</p>
+            <button onclick="event.stopPropagation(); deleteFile(${fileData.id})" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px; z-index: 10;">X</button>
         `;
     }
 
     mediaGrid.appendChild(card);
 }
 
-// Local Storage me save karne ka function
+// Full Screen View Box (Modal) HTML me jodhna
+function createFullViewModal() {
+    if (!document.getElementById('fullViewModal')) {
+        const modal = document.createElement('div');
+        modal.id = 'fullViewModal';
+        modal.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center;';
+        modal.innerHTML = `
+            <span onclick="closeFullView()" style="position: absolute; top: 20px; right: 25px; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer;">&times;</span>
+            <img id="fullViewImg" src="" style="max-width: 90%; max-height: 80%; border-radius: 8px; box-shadow: 0 0 20px rgba(21, 150, 240, 0.5);">
+        `;
+        document.body.appendChild(modal);
+    }
+}
+
+function openFullView(src) {
+    const modal = document.getElementById('fullViewModal');
+    const modalImg = document.getElementById('fullViewImg');
+    if (modal && modalImg) {
+        modalImg.src = src;
+        modal.style.display = 'flex';
+    }
+}
+
+function closeFullView() {
+    const modal = document.getElementById('fullViewModal');
+    if (modal) modal.style.display = 'none';
+}
+
 function saveFileToLocalStorage(fileData) {
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
     files.push(fileData);
     localStorage.setItem('devide_files', JSON.stringify(files));
 }
 
-// Saved files ko load karne ka function
 function loadSavedFiles() {
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
     if (files.length > 0) {
@@ -79,17 +106,14 @@ function loadSavedFiles() {
     }
 }
 
-// File delete karne ka function
 function deleteFile(id) {
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
     files = files.filter(file => file.id !== id);
     localStorage.setItem('devide_files', JSON.stringify(files));
     
-    // Screen se hatana
     const card = document.querySelector(`[data-id="${id}"]`);
     if (card) card.remove();
     
-    // Agar sab delete ho gaya toh wapas message dikhao
     if (files.length === 0) {
         const emptyMsg = document.querySelector('.empty-msg');
         if (emptyMsg) emptyMsg.style.display = 'block';
