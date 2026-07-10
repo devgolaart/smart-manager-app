@@ -1,7 +1,8 @@
-// Devide App - Permanent Storage with Premium Full Screen Actions Menu
+// Devide App - Drive Style Folder Grid System
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSavedFiles();
+    createFullViewModal();
 });
 
 document.getElementById('fileUpload').addEventListener('change', function(event) {
@@ -35,6 +36,7 @@ document.getElementById('fileUpload').addEventListener('change', function(event)
     }
 });
 
+// Drive Layout Card with Local Menu
 function createMediaCard(fileData) {
     const emptyMsg = document.querySelector('.empty-msg');
     if (emptyMsg) emptyMsg.style.display = 'none';
@@ -43,160 +45,106 @@ function createMediaCard(fileData) {
     const card = document.createElement('div');
     card.className = 'media-card';
     card.setAttribute('data-id', fileData.id);
-    card.style.cssText = 'border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin: 10px; text-align: center; background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; display: inline-block; width: 140px; vertical-align: top; cursor: pointer;';
+    
+    // Google Drive jaisa premium dark/light card design
+    card.style.cssText = 'border: 1px solid #e0e0e0; border-radius: 12px; padding: 12px; margin: 8px; text-align: left; background-color: #f8f9fa; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative; display: inline-block; width: 155px; vertical-align: top;';
+
+    let contentHTML = '';
 
     if (fileData.type === 'image') {
-        card.innerHTML = `
-            <img src="${fileData.src}" class="clickable-img" alt="${fileData.name}" style="width: 100%; height: 100px; border-radius: 4px; object-fit: cover;">
-            <p id="title-${fileData.id}" style="font-size: 11px; margin-top: 8px; color: #333; word-break: break-all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fileData.name}</p>
-            <button class="delete-btn" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px; z-index: 10;">X</button>
+        contentHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 14px; color: #5f6368;">🖼️</span>
+                <span onclick="toggleCardMenu(event, ${fileData.id})" style="font-size: 18px; color: #5f6368; cursor: pointer; font-weight: bold; padding: 0 5px;">&#8942;</span>
+            </div>
+            <div onclick="openAdvancedFullView('${fileData.src}')" style="width: 100%; height: 100px; border-radius: 8px; overflow: hidden; cursor: pointer; background: #e8eaed; display: flex; align-items: center; justify-content: center;">
+                <img src="${fileData.src}" alt="${fileData.name}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
         `;
-
-        card.querySelector('.clickable-img').addEventListener('click', function() {
-            openAdvancedFullView(fileData);
-        });
-
-        card.querySelector('.delete-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            deleteFile(fileData.id);
-        });
     } else {
-        card.innerHTML = `
-            <div style="font-size: 40px; color: #28a745;">📄</div>
-            <p style="font-size: 11px; margin-top: 8px; color: #333; word-break: break-all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${fileData.name}</p>
-            <button class="delete-btn" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; line-height: 18px; z-index: 10;">X</button>
+        contentHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 14px; color: #28a745;">📄</span>
+                <span onclick="toggleCardMenu(event, ${fileData.id})" style="font-size: 18px; color: #5f6368; cursor: pointer; font-weight: bold; padding: 0 5px;">&#8942;</span>
+            </div>
+            <div style="width: 100%; height: 100px; border-radius: 8px; background: #e8eaed; display: flex; align-items: center; justify-content: center; font-size: 40px;">
+                📄
+            </div>
         `;
-        card.querySelector('.delete-btn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            deleteFile(fileData.id);
-        });
     }
+
+    // Dropdown Action Menu for individual Card
+    card.innerHTML = contentHTML + `
+        <p id="title-${fileData.id}" style="font-size: 13px; font-weight: 500; margin: 8px 0 0 0; color: #3c4043; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${fileData.name}</p>
+        
+        <div id="dropdown-${fileData.id}" class="card-dropdown" style="display: none; position: absolute; top: 30px; right: 10px; background: #ffffff; border: 1px solid #dadce0; border-radius: 8px; width: 120px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); z-index: 100;">
+            <div onclick="renameFileFromCard(event, ${fileData.id})" style="padding: 8px 12px; font-size: 13px; color: #3c4043; cursor: pointer; border-bottom: 1px solid #f1f3f4;">✏️ Rename</div>
+            <div onclick="deleteFileFromCard(event, ${fileData.id})" style="padding: 8px 12px; font-size: 13px; color: #d93025; cursor: pointer;">🗑️ Delete</div>
+        </div>
+    `;
+
     mediaGrid.appendChild(card);
 }
 
-// Advanced Full Screen View Window with Three Dots Menu
-let currentActiveFile = null;
-
-function openAdvancedFullView(fileData) {
-    currentActiveFile = fileData;
-    let modal = document.getElementById('premiumModal');
+// Card ke individual three dots toggle karne ke liye
+function toggleCardMenu(e, id) {
+    e.stopPropagation();
+    // Saare khule huye dropdowns ko pehle band karo
+    document.querySelectorAll('.card-dropdown').forEach(menu => {
+        if(menu.id !== `dropdown-${id}`) menu.style.display = 'none';
+    });
     
+    const targetMenu = document.getElementById(`dropdown-${id}`);
+    targetMenu.style.display = targetMenu.style.display === 'block' ? 'none' : 'block';
+}
+
+// Screen par kahi bhi click ho toh menu band ho jaye
+document.addEventListener('click', () => {
+    document.querySelectorAll('.card-dropdown').forEach(menu => menu.style.display = 'none');
+});
+
+// ====== CARD MENUS ACTIONS ======
+
+function renameFileFromCard(e, id) {
+    e.stopPropagation();
+    let files = JSON.parse(localStorage.getItem('devide_files')) || [];
+    const targetFile = files.find(f => f.id === id);
+    
+    if (targetFile) {
+        const newName = prompt("Naya naam daalein:", targetFile.name);
+        if (newName && newName.trim() !== "") {
+            files = files.map(f => {
+                if (f.id === id) f.name = newName;
+                return f;
+            });
+            localStorage.setItem('devide_files', JSON.stringify(files));
+            document.getElementById(`title-${id}`).innerText = newName;
+        }
+    }
+}
+
+function deleteFileFromCard(e, id) {
+    e.stopPropagation();
+    if (confirm("Kya aap ise delete karna chahte hain?")) {
+        deleteFile(id);
+    }
+}
+
+// ====== CORE ENGINES ======
+
+function openAdvancedFullView(src) {
+    let modal = document.getElementById('simpleModal');
     if (!modal) {
         modal = document.createElement('div');
-        modal.id = 'premiumModal';
-        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; display: flex; justify-content: center; align-items: center;';
-        modal.innerHTML = `
-            <span onclick="closePremiumModal()" style="position: absolute; top: 20px; left: 20px; color: #fff; font-size: 30px; cursor: pointer; font-weight: bold; z-index: 100001;">&times;</span>
-            
-            <div style="position: absolute; top: 20px; right: 20px; z-index: 100001;">
-                <span onclick="toggleActionMenu(event)" style="color: #fff; font-size: 30px; cursor: pointer; padding: 0 10px; font-weight: bold;">&#8942;</span>
-                <div id="actionMenu" style="display: none; position: absolute; top: 40px; right: 10px; background: #222; border: 1px solid #444; border-radius: 8px; width: 140px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
-                    <div onclick="handleDownload()" style="color: #fff; padding: 10px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #333;">📥 Download</div>
-                    <div onclick="handleRename()" style="color: #fff; padding: 10px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #333;">✏️ Rename</div>
-                    <div onclick="handleShare()" style="color: #fff; padding: 10px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #333;">🔗 Share</div>
-                    <div onclick="handleCrop()" style="color: #fff; padding: 10px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #333;">✂️ Crop (Info)</div>
-                    <div onclick="handleDeleteFromMenu()" style="color: red; padding: 10px; cursor: pointer; font-size: 14px;">🗑️ Delete</div>
-                </div>
-            </div>
-
-            <img id="premiumImg" src="" style="max-width: 95%; max-height: 80%; border-radius: 8px;">
-        `;
+        modal.id = 'simpleModal';
+        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; display: flex; justify-content: center; align-items: center; cursor: pointer;';
+        modal.innerHTML = '<img id="simpleImg" src="" style="max-width: 95%; max-height: 85%; border-radius: 8px;">';
+        modal.addEventListener('click', () => modal.style.display = 'none');
         document.body.appendChild(modal);
-        
-        // Background click par menu close hona chahiye
-        modal.addEventListener('click', function(e) {
-            if(e.target === modal || e.target === document.getElementById('premiumImg')) {
-                document.getElementById('actionMenu').style.display = 'none';
-            }
-        });
     }
-    
-    document.getElementById('premiumImg').src = fileData.src;
-    document.getElementById('actionMenu').style.display = 'none'; // Shuruat me menu hidden rahega
+    document.getElementById('simpleImg').src = src;
     modal.style.display = 'flex';
 }
-
-function closePremiumModal() {
-    const modal = document.getElementById('premiumModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function toggleActionMenu(e) {
-    e.stopPropagation();
-    const menu = document.getElementById('actionMenu');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-}
-
-// ====== MENU OPERATIONS ======
-
-// 1. Download Feature
-function handleDownload() {
-    if (!currentActiveFile) return;
-    const link = document.createElement('a');
-    link.href = currentActiveFile.src;
-    link.download = currentActiveFile.name || 'devide-photo.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-// 2. Rename Feature
-function handleRename() {
-    if (!currentActiveFile) return;
-    const currentName = currentActiveFile.name;
-    const newName = prompt("Naya naam likhiye:", currentName);
-    
-    if (newName && newName.trim() !== "") {
-        let files = JSON.parse(localStorage.getItem('devide_files')) || [];
-        files = files.map(file => {
-            if (file.id === currentActiveFile.id) {
-                file.name = newName;
-                currentActiveFile.name = newName; // Active state update
-            }
-            return file;
-        });
-        localStorage.setItem('devide_files', JSON.stringify(files));
-        
-        // UI me naam update karna
-        const titleText = document.getElementById(`title-${currentActiveFile.id}`);
-        if (titleText) titleText.innerText = newName;
-        
-        alert("Naam badal diya gaya!");
-        document.getElementById('actionMenu').style.display = 'none';
-    }
-}
-
-// 3. Share Feature
-function handleShare() {
-    if (!currentActiveFile) return;
-    if (navigator.share) {
-        navigator.share({
-            title: currentActiveFile.name,
-            text: 'Devide App se share ki gayi photo',
-            url: window.location.href
-        }).catch(console.error);
-    } else {
-        alert("Link copied! Aap is app ke link ko share kar sakte hain.");
-    }
-    document.getElementById('actionMenu').style.display = 'none';
-}
-
-// 4. Crop Feature (Premium notification setup)
-function handleCrop() {
-    alert("✂️ Crop & AI Editing feature agli baar Database updates ke sath pure-scale par active hoga!");
-    document.getElementById('actionMenu').style.display = 'none';
-}
-
-// 5. Delete From Menu
-function handleDeleteFromMenu() {
-    if (!currentActiveFile) return;
-    if (confirm("Kya aap sach me ye file delete karna chahte hain?")) {
-        deleteFile(currentActiveFile.id);
-        closePremiumModal();
-    }
-}
-
-// ====== BASE ENGINE CORE ======
 
 function saveFileToLocalStorage(fileData) {
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
@@ -223,8 +171,4 @@ function deleteFile(id) {
         const emptyMsg = document.querySelector('.empty-msg');
         if (emptyMsg) emptyMsg.style.display = 'block';
     }
-}
-
-function filterCategory(category) {
-    console.log("Filter changed to: " + category);
 }
