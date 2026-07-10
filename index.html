@@ -3,51 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Devide App</title>
+    <title>Devide App</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
-    
 </head>
 <body>
 
-    <!-- Header Section -->
+    <div id="sidebarMenu" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Devide <span>Drive</span></h2>
+            <span class="close-sidebar-btn" onclick="toggleSidebar()">&times;</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 10px 0;">
+        <div class="sidebar-links">
+            <a href="#" onclick="toggleSidebar()"><span class="icon">🕒</span> Recent</a>
+            <a href="#" onclick="toggleSidebar()"><span class="icon">📤</span> Uploads</a>
+            <a href="#" onclick="toggleSidebar()"><span class="icon">💾</span> Offline</a>
+            <a href="#" onclick="toggleSidebar()"><span class="icon">🗑️</span> Bin</a>
+            <a href="#" onclick="toggleSidebar()"><span class="icon">⚠️</span> Spam</a>
+            <a href="#" onclick="toggleSidebar()"><span class="icon">⚙️</span> Settings</a>
+            <a href="#" onclick="toggleSidebar()"><span class="icon">❓</span> Help and feedback</a>
+        </div>
+        
+        <div class="storage-section">
+            <div style="display: flex; align-items: center; margin-bottom: 5px; font-size: 13px; color: #aaa;">
+                <span style="margin-right: 8px;">☁️</span> Storage
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill"></div>
+            </div>
+            <p class="storage-text">0.1 GB of 15 GB used</p>
+            <button class="get-storage-btn">Get more storage</button>
+        </div>
+    </div>
+
     <header>
+        <div class="menu-trigger-btn" onclick="toggleSidebar()">&#9776;</div>
         <h1>Devide</h1>
         <p>Your AI-Powered Free Storage</p>
     </header>
 
-    <!-- Main Container -->
     <main class="container">
-        
-        <!-- Search Bar with Voice Feature -->
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Search photos, faces, or docs...">
             <button id="voiceBtn" class="btn-icon">🎤</button>
         </div>
 
-        <!-- Category Tabs -->
         <div class="categories">
             <button class="tab-btn active" onclick="filterCategory('all')">All</button>
             <button class="tab-btn" onclick="filterCategory('photo')">Photos</button>
             <button class="tab-btn" onclick="filterCategory('doc')">Documents</button>
         </div>
 
-        <!-- Upload Button -->
         <div class="upload-section">
             <label for="fileUpload" class="upload-btn">
-                ➕ Upload File (Photo / PDF)
+                <span>➕ Upload File (Photo / PDF)</span>
             </label>
             <input type="file" id="fileUpload" accept="image/*, application/pdf" style="display: none;" multiple>
-        
         </div>
 
-        <!-- Gallery / File Display Grid -->
         <div class="media-grid" id="mediaGrid">
-            <!-- Uploaded files yahan dikhenge -->
             <p class="empty-msg">No files uploaded yet. Click plus to add!</p>
         </div>
-
     </main>
 
     <script src="app.js"></script>
