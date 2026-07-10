@@ -17,13 +17,14 @@
         </div>
         <hr style="border: 0; border-top: 1px solid #333; margin: 10px 0;">
         <div class="sidebar-links">
-            <a href="#" onclick="toggleSidebar()"><span class="icon">🕒</span> Recent</a>
-            <a href="#" onclick="toggleSidebar()"><span class="icon">📤</span> Uploads</a>
-            <a href="#" onclick="toggleSidebar()"><span class="icon">💾</span> Offline</a>
-            <a href="#" onclick="toggleSidebar()"><span class="icon">🗑️</span> Bin</a>
-            <a href="#" onclick="toggleSidebar()"><span class="icon">⚠️</span> Spam</a>
-            <a href="#" onclick="toggleSidebar()"><span class="icon">⚙️</span> Settings</a>
-            <a href="#" onclick="toggleSidebar()"><span class="icon">❓</span> Help and feedback</a>
+            <a href="#" onclick="handleSidebarAction('recent')"><span class="icon">🕒</span> Recent</a>
+<a href="#" onclick="handleSidebarAction('uploads')"><span class="icon">📤</span> Uploads</a>
+<a href="#" onclick="handleSidebarAction('offline')"><span class="icon">💾</span> Offline</a>
+<a href="#" onclick="handleSidebarAction('bin')"><span class="icon">🗑️</span> Bin</a>
+<a href="#" onclick="handleSidebarAction('spam')"><span class="icon">⚠️</span> Spam</a>
+<a href="#" onclick="handleSidebarAction('settings')"><span class="icon">⚙️</span> Settings</a>
+<a href="#" onclick="handleSidebarAction('help')"><span class="icon">❓</span> Help and feedback</a>
+            
         </div>
         
         <div class="storage-section">
