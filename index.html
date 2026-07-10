@@ -10,24 +10,24 @@
 </head>
 <body>
 
+    <!-- SIDEBAR NAVIGATION MENU -->
     <div id="sidebarMenu" class="sidebar">
         <div class="sidebar-header">
-               <div class="sidebar-header">
             <h2 style="color: #fff; font-size: 22px; font-weight: 600; margin: 0;">Devide</h2>
             <span class="close-sidebar-btn" onclick="toggleSidebar()">&times;</span>
-               </div>
-            
+        </div>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 10px 0;">
         <div class="sidebar-links">
             <a href="#" onclick="handleSidebarAction('recent')"><span class="icon">🕒</span> Recent</a>
-<a href="#" onclick="handleSidebarAction('uploads')"><span class="icon">📤</span> Uploads</a>
-<a href="#" onclick="handleSidebarAction('offline')"><span class="icon">💾</span> Offline</a>
-<a href="#" onclick="handleSidebarAction('bin')"><span class="icon">🗑️</span> Bin</a>
-<a href="#" onclick="handleSidebarAction('spam')"><span class="icon">⚠️</span> Spam</a>
-<a href="#" onclick="handleSidebarAction('settings')"><span class="icon">⚙️</span> Settings</a>
-<a href="#" onclick="handleSidebarAction('help')"><span class="icon">❓</span> Help and feedback</a>
-            
+            <a href="#" onclick="handleSidebarAction('uploads')"><span class="icon">📤</span> Uploads</a>
+            <a href="#" onclick="handleSidebarAction('offline')"><span class="icon">💾</span> Offline</a>
+            <a href="#" onclick="handleSidebarAction('bin')"><span class="icon">🗑️</span> Bin</a>
+            <a href="#" onclick="handleSidebarAction('spam')"><span class="icon">⚠️</span> Spam</a>
+            <a href="#" onclick="handleSidebarAction('settings')"><span class="icon">⚙️</span> Settings</a>
+            <a href="#" onclick="handleSidebarAction('help')"><span class="icon">❓</span> Help and feedback</a>
         </div>
         
+        <!-- STORAGE INDICATOR BAR -->
         <div class="storage-section">
             <div style="display: flex; align-items: center; margin-bottom: 5px; font-size: 13px; color: #aaa;">
                 <span style="margin-right: 8px;">☁️</span> Storage
@@ -40,24 +40,29 @@
         </div>
     </div>
 
+    <!-- MAIN APP WRAPPER -->
     <header>
+        <!-- Hamburger Menu Button (3 Lines) -->
         <div class="menu-trigger-btn" onclick="toggleSidebar()">&#9776;</div>
         <h1>Devide</h1>
         <p>Your AI-Powered Free Storage</p>
     </header>
 
     <main class="container">
+        <!-- Search Bar -->
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Search photos, faces, or docs...">
             <button id="voiceBtn" class="btn-icon">🎤</button>
         </div>
 
+        <!-- Category Tabs -->
         <div class="categories">
             <button class="tab-btn active" onclick="filterCategory('all')">All</button>
             <button class="tab-btn" onclick="filterCategory('photo')">Photos</button>
             <button class="tab-btn" onclick="filterCategory('doc')">Documents</button>
         </div>
 
+        <!-- Upload Button -->
         <div class="upload-section">
             <label for="fileUpload" class="upload-btn">
                 <span>➕ Upload File (Photo / PDF)</span>
@@ -65,7 +70,9 @@
             <input type="file" id="fileUpload" accept="image/*, application/pdf" style="display: none;" multiple>
         </div>
 
+        <!-- Gallery / File Display Grid -->
         <div class="media-grid" id="mediaGrid">
+            <!-- Dynamic uploaded cards will appear here -->
             <p class="empty-msg">No files uploaded yet. Click plus to add!</p>
         </div>
     </main>
