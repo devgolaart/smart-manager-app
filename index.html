@@ -54,6 +54,30 @@
             <button id="voiceBtn" class="btn-icon">🎤</button>
         </div>
 
+        <!-- 🆕 SMART ROUND GALLERY SHORTCUTS (HORIZONTAL SCROLL) -->
+        <div class="smart-shortcuts-container">
+            <div class="shortcut-item" onclick="filterSmartTag('people')">
+                <div class="shortcut-circle">👥</div>
+                <span>People</span>
+            </div>
+            <div class="shortcut-item" onclick="filterSmartTag('selfie')">
+                <div class="shortcut-circle">🤳</div>
+                <span>Selfies</span>
+            </div>
+            <div class="shortcut-item" onclick="filterSmartTag('nature')">
+                <div class="shortcut-circle">🌲</div>
+                <span>Nature</span>
+            </div>
+            <div class="shortcut-item" onclick="filterSmartTag('food')">
+                <div class="shortcut-circle">🍔</div>
+                <span>Food</span>
+            </div>
+            <div class="shortcut-item" onclick="filterSmartTag('screenshot')">
+                <div class="shortcut-circle">📱</div>
+                <span>Screenshots</span>
+            </div>
+        </div>
+
         <!-- Category Tabs -->
         <div class="categories">
             <button class="tab-btn active" onclick="filterCategory('all')">All</button>
@@ -67,10 +91,9 @@
         </div>
     </main>
 
-    <!-- FLOATING ACTION BUTTON SYSTEM (DRIVE STYLE) -->
+    <!-- FLOATING ACTION BUTTON SYSTEM -->
     <div class="fab-container">
         <div id="fabOverlay" class="fab-overlay" onclick="toggleFabMenu()"></div>
-
         <div id="fabOptions" class="fab-options">
             <div class="fab-option-item" onclick="handleFabAction('slides')">
                 <span class="fab-label">Google Slides</span>
@@ -97,7 +120,6 @@
                 <div class="fab-sub-icon style-folder">📁</div>
             </div>
         </div>
-
         <button id="mainFabBtn" class="fab-main-btn" onclick="toggleFabMenu()">➕</button>
         <input type="file" id="fileUpload" accept="image/*, application/pdf" style="display: none;" multiple>
     </div>
