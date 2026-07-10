@@ -1,4 +1,4 @@
-// Devide Advanced Core - People Recognition Grid & Smart Filter Engine
+// Devide Advanced Engine - Fixed Smart Gallery Filtering System
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSavedFiles();
@@ -7,17 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('fileUpload').addEventListener('change', function(event) {
     const files = event.target.files;
     if (files.length > 0) {
-        // AI Prompter asking for Smart Tags AND Person Name
-        const smartTag = prompt("Is image ki category chunhein:\n(people, selfie, nature, food, screenshot)").toLowerCase().trim();
+        // Category selection prompter
+        const smartTag = prompt("Is image ki category chunhein:\n(people, selfie, nature, food, screenshot)");
+        const formattedTag = smartTag ? smartTag.toLowerCase().trim() : 'selfie';
         
         let personName = "Unknown";
-        if (smartTag === 'people') {
+        if (formattedTag === 'people') {
             personName = prompt("👤 Is bande/bandi ka naam likhein:");
             if(!personName || personName.trim() === "") personName = "Unknown";
         }
 
         const validTags = ['people', 'selfie', 'nature', 'food', 'screenshot'];
-        const finalTag = validTags.includes(smartTag) ? smartTag : 'people';
+        const finalTag = validTags.includes(formattedTag) ? formattedTag : 'selfie';
 
         Array.from(files).forEach(file => {
             if (file.type.startsWith('image/')) {
@@ -29,7 +30,7 @@ document.getElementById('fileUpload').addEventListener('change', function(event)
                         src: e.target.result,
                         type: 'image',
                         smartTag: finalTag,
-                        personName: personName.trim() // Person name hook saved here
+                        personName: personName.trim()
                     };
                     createMediaCard(fileData);
                     saveFileToLocalStorage(fileData);
@@ -109,61 +110,11 @@ function createMediaCard(fileData) {
     mediaGrid.appendChild(card);
 }
 
-// 🆕 OPEN PEOPLE SYSTEM DYNAMIC SCREEN GALLERY
-function openPeopleGallery() {
-    document.getElementById('mainAppContent').style.display = 'none';
-    const peopleContainer = document.getElementById('peopleGalleryModal');
-    peopleContainer.style.display = 'block';
-    
-    const peopleGrid = document.getElementById('peopleGridSystem');
-    peopleGrid.innerHTML = ''; // Reset Grid
-    
-    let files = JSON.parse(localStorage.getItem('devide_files')) || [];
-    // Only fetch people tagged items
-    let peopleFiles = files.filter(f => f.smartTag === 'people');
-
-    if(peopleFiles.length === 0) {
-        peopleGrid.innerHTML = `<p style="grid-column: span 3; color: #aaa; text-align: center; margin-top: 5px;">No people profiles saved yet. Upload images with 'people' tag!</p>`;
-        return;
-    }
-
-    peopleFiles.forEach(person => {
-        const card = document.createElement('div');
-        card.className = 'person-card';
-        card.setAttribute('data-name', person.personName.toLowerCase()); // Search parameter mapping
-        card.innerHTML = `
-            <div class="person-img-wrapper">
-                <img src="${person.src}" alt="${person.personName}">
-            </div>
-            <p>${person.personName}</p>
-        `;
-        peopleGrid.appendChild(card);
-    });
-}
-
-function closePeopleGallery() {
-    document.getElementById('peopleGalleryModal').style.display = 'none';
-    document.getElementById('mainAppContent').style.display = 'block';
-    loadSavedFiles();
-}
-
-// 🆕 INNER LIVE SEARCH ENGINE FOR PEOPLE NAMES
-function searchPeopleByName() {
-    const searchText = document.getElementById('peopleSearchInput').value.toLowerCase().trim();
-    const cards = document.querySelectorAll('.person-card');
-
-    cards.forEach(card => {
-        const nameAttr = card.getAttribute('data-name');
-        if (nameAttr.includes(searchText)) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-}
-
-// Standard Filtering Systems
+// 🆕 FIXED SMART SHORTCUT FILTER
 function filterSmartTag(selectedTag) {
+    // Pehle saari files load karo taaki fresh filtering ho sake
+    loadSavedFiles();
+    
     const cards = document.querySelectorAll('.media-card');
     const emptyMsg = document.querySelector('.empty-msg');
     let matchedCount = 0;
@@ -178,12 +129,65 @@ function filterSmartTag(selectedTag) {
         }
     });
 
-    if (matchedCount === 0 && emptyMsg) {
-        emptyMsg.style.display = 'block';
-        emptyMsg.innerText = `No photos found in "${selectedTag.toUpperCase()}" category!`;
-    } else if (emptyMsg) {
-        emptyMsg.style.display = 'none';
+    if (emptyMsg) {
+        if (matchedCount === 0) {
+            emptyMsg.style.display = 'block';
+            emptyMsg.innerText = `No items found in "${selectedTag.toUpperCase()}"`;
+        } else {
+            emptyMsg.style.display = 'none';
+        }
     }
+}
+
+// PEOPLE DRAWER LOGIC
+function openPeopleGallery() {
+    document.getElementById('mainAppContent').style.display = 'none';
+    const peopleContainer = document.getElementById('peopleGalleryModal');
+    peopleContainer.style.display = 'block';
+    
+    const peopleGrid = document.getElementById('peopleGridSystem');
+    peopleGrid.innerHTML = '';
+    
+    let files = JSON.parse(localStorage.getItem('devide_files')) || [];
+    let peopleFiles = files.filter(f => f.smartTag === 'people');
+
+    if(peopleFiles.length === 0) {
+        peopleGrid.innerHTML = `<p style="grid-column: span 3; color: #aaa; text-align: center; margin-top: 20px;">No people profiles saved yet.</p>`;
+        return;
+    }
+
+    peopleFiles.forEach(person => {
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        card.setAttribute('data-name', (person.personName || 'unknown').toLowerCase());
+        card.innerHTML = `
+            <div class="person-img-wrapper">
+                <img src="${person.src}" alt="${person.personName}">
+            </div>
+            <p>${person.personName || 'Unknown'}</p>
+        `;
+        peopleGrid.appendChild(card);
+    });
+}
+
+function closePeopleGallery() {
+    document.getElementById('peopleGalleryModal').style.display = 'none';
+    document.getElementById('mainAppContent').style.display = 'block';
+    loadSavedFiles();
+}
+
+function searchPeopleByName() {
+    const searchText = document.getElementById('peopleSearchInput').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.person-card');
+
+    cards.forEach(card => {
+        const nameAttr = card.getAttribute('data-name') || '';
+        if (nameAttr.includes(searchText)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
 }
 
 function toggleFabMenu() {
@@ -265,7 +269,6 @@ function filterCategory(category) {
             card.style.display = 'none';
         }
     });
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 }
 
 function renameFileFromCard(e, id) {
@@ -315,7 +318,6 @@ function loadSavedFiles() {
     }
 }
 
-// Global Core Clear Engine
 function deleteFile(id) {
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
     files = files.filter(file => file.id !== id); localStorage.setItem('devide_files', JSON.stringify(files));
@@ -327,4 +329,3 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebarMenu');
     sidebar.style.width = sidebar.style.width === '250px' ? '0' : '250px';
 }
-    
