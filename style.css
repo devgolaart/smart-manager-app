@@ -1,4 +1,3 @@
-/* Base Themes & Fonts */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
@@ -27,7 +26,6 @@ header p {
     color: #5f6368;
 }
 
-/* HAMBURGER TRIGGER BUTTON */
 .menu-trigger-btn {
     position: absolute;
     left: 20px;
@@ -39,17 +37,17 @@ header p {
     padding: 5px 10px;
 }
 
-/* SIDEBAR DRAWER LAYOUT (DARK THEME DIRECT FROM DRIVE) */
+/* SIDEBAR DRAWER LAYOUT */
 .sidebar {
     height: 100%;
-    width: 0; /* Shuruat me band rahega */
+    width: 0;
     position: fixed;
     z-index: 999999;
     top: 0;
     left: 0;
-    background-color: #1e1f20; /* Premium Google Dark Theme */
+    background-color: #1e1f20;
     overflow-x: hidden;
-    transition: 0.3s; /* Smooth open animation */
+    transition: 0.3s;
     display: flex;
     flex-direction: column;
     box-shadow: 4px 0 15px rgba(0,0,0,0.3);
@@ -63,27 +61,12 @@ header p {
     color: #fff;
 }
 
-.sidebar-header h2 {
-    margin: 0;
-    font-size: 20px;
-}
-
-.sidebar-header h2 span {
-    font-weight: 400;
-    color: #8ab4f8;
-}
-
 .close-sidebar-btn {
     font-size: 28px;
     cursor: pointer;
     color: #aaa;
 }
 
-.close-sidebar-btn:hover {
-    color: #fff;
-}
-
-/* SIDEBAR LINKS */
 .sidebar-links {
     flex-grow: 1;
     padding-top: 10px;
@@ -110,7 +93,6 @@ header p {
     text-align: center;
 }
 
-/* STORAGE PROGRESS SECTION */
 .storage-section {
     padding: 20px;
     background-color: #18191a;
@@ -127,7 +109,7 @@ header p {
 }
 
 .progress-bar-fill {
-    width: 8%; /* Kitna storage use hua h */
+    width: 8%;
     background-color: #8ab4f8;
     height: 100%;
     border-radius: 2px;
@@ -149,18 +131,13 @@ header p {
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: 0.2s;
 }
 
-.get-storage-btn:hover {
-    background: rgba(138, 180, 248, 0.1);
-}
-
-/* Main Container and Grid elements */
 .container {
     padding: 15px;
     max-width: 600px;
     margin: 0 auto;
+    padding-bottom: 100px; /* FAB ke liye space */
 }
 
 .search-box {
@@ -186,7 +163,6 @@ header p {
     background: none;
     border: none;
     font-size: 16px;
-    cursor: pointer;
 }
 
 .categories {
@@ -213,23 +189,6 @@ header p {
     font-weight: 500;
 }
 
-.upload-section {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.upload-btn {
-    background-color: #34a853;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 24px;
-    display: inline-block;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-}
-
 .media-grid {
     text-align: center;
 }
@@ -238,4 +197,119 @@ header p {
     color: #70757a;
     font-size: 14px;
     margin-top: 40px;
+}
+
+/* ===================================================
+   🆕 FLOATING ACTION BUTTON (FAB) SYSTEM STYLE
+   =================================================== */
+.fab-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Background Blurring Overlay */
+.fab-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s ease;
+    z-index: 9997;
+}
+
+.fab-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Main (+) Button Design - Teal Theme from Screenshot */
+.fab-main-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px; /* Squircle modern shape */
+    background-color: #00796b; /* Dark Teal */
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 9999;
+    transition: transform 0.2s ease, background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fab-main-btn.open {
+    background-color: #00e5ff; /* Cyan color on open */
+    color: #000;
+    transform: rotate(135deg); /* Plus becomes Close (X) */
+}
+
+/* Menu Options Container */
+.fab-options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-bottom: 15px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: 0.2s ease;
+    z-index: 9998;
+}
+
+.fab-options.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Row wrapper for label + sub-icon */
+.fab-option-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    text-decoration: none;
+}
+
+/* Label text next to icons */
+.fab-label {
+    background-color: #004d40;
+    color: #e0f2f1;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    white-space: nowrap;
+}
+
+/* Sub-icons bubbles */
+.fab-sub-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #004d40;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: transform 0.1s;
+}
+
+.fab-sub-icon:active {
+    transform: scale(0.9);
 }
