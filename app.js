@@ -172,3 +172,12 @@ function deleteFile(id) {
         if (emptyMsg) emptyMsg.style.display = 'block';
     }
 }
+// Sidebar open aur close karne ka control function
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebarMenu');
+    if (sidebar.style.width === '250px') {
+        sidebar.style.width = '0';
+    } else {
+        sidebar.style.width = '250px';
+    }
+}
