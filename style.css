@@ -37,7 +37,7 @@ header p {
     padding: 5px 10px;
 }
 
-/* SIDEBAR DRAWER LAYOUT */
+/* SIDEBAR DRAWER */
 .sidebar {
     height: 100%;
     width: 0;
@@ -137,7 +137,7 @@ header p {
     padding: 15px;
     max-width: 600px;
     margin: 0 auto;
-    padding-bottom: 100px; /* FAB ke liye space */
+    padding-bottom: 100px;
 }
 
 .search-box {
@@ -163,6 +163,55 @@ header p {
     background: none;
     border: none;
     font-size: 16px;
+}
+
+/* 🆕 SMART SHORTCUTS DYNAMIC SCROLL STYLE */
+.smart-shortcuts-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 5px;
+    margin-bottom: 15px;
+    scroll-behavior: smooth;
+}
+
+.smart-shortcuts-container::-webkit-scrollbar {
+    display: none; /* Scrollbar ko hide karega clean look ke liye */
+}
+
+.shortcut-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    min-width: 70px;
+}
+
+.shortcut-circle {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: #e8eaed;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.shortcut-item:hover .shortcut-circle {
+    transform: scale(1.05);
+    border-color: #1a73e8;
+}
+
+.shortcut-item span {
+    font-size: 12px;
+    font-weight: 500;
+    color: #5f6368;
+    margin-top: 6px;
+    text-align: center;
 }
 
 .categories {
@@ -199,9 +248,7 @@ header p {
     margin-top: 40px;
 }
 
-/* ===================================================
-   🆕 FLOATING ACTION BUTTON (FAB) SYSTEM STYLE
-   =================================================== */
+/* FAB ACTION SYSTEM STYLE */
 .fab-container {
     position: fixed;
     bottom: 25px;
@@ -212,7 +259,6 @@ header p {
     align-items: flex-end;
 }
 
-/* Background Blurring Overlay */
 .fab-overlay {
     position: fixed;
     top: 0;
@@ -231,12 +277,11 @@ header p {
     visibility: visible;
 }
 
-/* Main (+) Button Design - Teal Theme from Screenshot */
 .fab-main-btn {
     width: 60px;
     height: 60px;
-    border-radius: 20px; /* Squircle modern shape */
-    background-color: #00796b; /* Dark Teal */
+    border-radius: 20px;
+    background-color: #00796b;
     border: none;
     color: #fff;
     font-size: 24px;
@@ -250,12 +295,11 @@ header p {
 }
 
 .fab-main-btn.open {
-    background-color: #00e5ff; /* Cyan color on open */
+    background-color: #00e5ff;
     color: #000;
-    transform: rotate(135deg); /* Plus becomes Close (X) */
+    transform: rotate(135deg);
 }
 
-/* Menu Options Container */
 .fab-options {
     display: flex;
     flex-direction: column;
@@ -274,7 +318,6 @@ header p {
     transform: translateY(0);
 }
 
-/* Row wrapper for label + sub-icon */
 .fab-option-item {
     display: flex;
     align-items: center;
@@ -282,7 +325,6 @@ header p {
     text-decoration: none;
 }
 
-/* Label text next to icons */
 .fab-label {
     background-color: #004d40;
     color: #e0f2f1;
@@ -295,7 +337,6 @@ header p {
     white-space: nowrap;
 }
 
-/* Sub-icons bubbles */
 .fab-sub-icon {
     width: 45px;
     height: 45px;
@@ -308,8 +349,4 @@ header p {
     font-size: 18px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     transition: transform 0.1s;
-}
-
-.fab-sub-icon:active {
-    transform: scale(0.9);
-}
+    }
