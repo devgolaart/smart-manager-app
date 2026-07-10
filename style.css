@@ -1,121 +1,241 @@
-/* General Styling */
-* {
+/* Base Themes & Fonts */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-    background-color: #f4f6f9;
+    background-color: #f5f5f5;
     color: #333;
-    padding: 15px;
 }
 
 header {
+    background-color: #fff;
+    padding: 15px;
     text-align: center;
-    margin-bottom: 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    position: relative;
 }
 
 header h1 {
-    color: #1a73e8;
+    margin: 0;
     font-size: 24px;
-    margin-bottom: 5px;
+    color: #1a73e8;
 }
 
 header p {
-    color: #666;
-    font-size: 14px;
+    margin: 5px 0 0 0;
+    font-size: 12px;
+    color: #5f6368;
 }
 
-/* Container */
+/* HAMBURGER TRIGGER BUTTON */
+.menu-trigger-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    cursor: pointer;
+    color: #5f6368;
+    padding: 5px 10px;
+}
+
+/* SIDEBAR DRAWER LAYOUT (DARK THEME DIRECT FROM DRIVE) */
+.sidebar {
+    height: 100%;
+    width: 0; /* Shuruat me band rahega */
+    position: fixed;
+    z-index: 999999;
+    top: 0;
+    left: 0;
+    background-color: #1e1f20; /* Premium Google Dark Theme */
+    overflow-x: hidden;
+    transition: 0.3s; /* Smooth open animation */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 15px 10px 20px;
+    color: #fff;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.sidebar-header h2 span {
+    font-weight: 400;
+    color: #8ab4f8;
+}
+
+.close-sidebar-btn {
+    font-size: 28px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.close-sidebar-btn:hover {
+    color: #fff;
+}
+
+/* SIDEBAR LINKS */
+.sidebar-links {
+    flex-grow: 1;
+    padding-top: 10px;
+}
+
+.sidebar-links a {
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 15px;
+    color: #e8eaed;
+    display: flex;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.sidebar-links a:hover {
+    background-color: #3c4043;
+}
+
+.sidebar-links a .icon {
+    margin-right: 15px;
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+/* STORAGE PROGRESS SECTION */
+.storage-section {
+    padding: 20px;
+    background-color: #18191a;
+    border-top: 1px solid #3c4043;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: #3c4043;
+    height: 4px;
+    border-radius: 2px;
+    margin: 8px 0;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    width: 8%; /* Kitna storage use hua h */
+    background-color: #8ab4f8;
+    height: 100%;
+    border-radius: 2px;
+}
+
+.storage-text {
+    font-size: 12px;
+    color: #e8eaed;
+    margin: 0 0 12px 0;
+}
+
+.get-storage-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #8ab4f8;
+    color: #8ab4f8;
+    padding: 8px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.get-storage-btn:hover {
+    background: rgba(138, 180, 248, 0.1);
+}
+
+/* Main Container and Grid elements */
 .container {
-    max-width: 500px;
+    padding: 15px;
+    max-width: 600px;
     margin: 0 auto;
 }
 
-/* Search Box */
 .search-box {
     display: flex;
+    background: #fff;
+    border-radius: 24px;
+    padding: 5px 15px;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+    border: 1px solid #dadce0;
+}
+
+.search-box input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.categories {
+    display: flex;
+    justify-content: center;
     gap: 10px;
     margin-bottom: 20px;
 }
 
-#searchInput {
-    flex: 1;
-    padding: 12px 15px;
-    border: 1px solid #ccc;
-    border-radius: 25px;
-    font-size: 16px;
-    outline: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.btn-icon {
-    background-color: #1a73e8;
-    border: none;
-    color: white;
-    font-size: 18px;
-    padding: 10px 15px;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-/* Category Tabs */
-.categories {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
 .tab-btn {
-    background: none;
-    border: none;
-    padding: 8px 20px;
-    font-size: 15px;
-    font-weight: 600;
-    color: #666;
+    background: #fff;
+    border: 1px solid #dadce0;
+    padding: 6px 16px;
+    border-radius: 16px;
+    font-size: 13px;
     cursor: pointer;
-    border-bottom: 3px solid transparent;
+    color: #5f6368;
 }
 
 .tab-btn.active {
+    background: #e8f0fe;
     color: #1a73e8;
-    border-bottom: 3px solid #1a73e8;
+    border-color: #1a73e8;
+    font-weight: 500;
 }
 
-/* Upload Section */
 .upload-section {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .upload-btn {
     background-color: #34a853;
     color: white;
-    padding: 12px 30px;
-    border-radius: 25px;
-    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 24px;
     display: inline-block;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
-/* Media Grid */
 .media-grid {
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    min-height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    text-align: center;
 }
 
 .empty-msg {
-    color: #999;
+    color: #70757a;
     font-size: 14px;
-    text-align: center;
+    margin-top: 40px;
 }
