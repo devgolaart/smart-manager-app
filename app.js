@@ -1,4 +1,4 @@
-// Devide Advanced Engine - Fixed Smart Gallery Filtering System
+// Devide Engine - Fully Fixed Sidebar Options (Recent, Uploads, Offline)
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSavedFiles();
@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('fileUpload').addEventListener('change', function(event) {
     const files = event.target.files;
     if (files.length > 0) {
-        // Category selection prompter
         const smartTag = prompt("Is image ki category chunhein:\n(people, selfie, nature, food, screenshot)");
         const formattedTag = smartTag ? smartTag.toLowerCase().trim() : 'selfie';
         
@@ -32,8 +31,8 @@ document.getElementById('fileUpload').addEventListener('change', function(event)
                         smartTag: finalTag,
                         personName: personName.trim()
                     };
-                    createMediaCard(fileData);
                     saveFileToLocalStorage(fileData);
+                    loadSavedFiles();
                 };
                 reader.readAsDataURL(file);
             } else {
@@ -45,17 +44,14 @@ document.getElementById('fileUpload').addEventListener('change', function(event)
                     smartTag: 'none',
                     personName: 'none'
                 };
-                createMediaCard(fileData);
                 saveFileToLocalStorage(fileData);
+                loadSavedFiles();
             }
         });
     }
 });
 
 function createMediaCard(fileData) {
-    const emptyMsg = document.querySelector('.empty-msg');
-    if (emptyMsg) emptyMsg.style.display = 'none';
-
     const mediaGrid = document.getElementById('mediaGrid');
     const card = document.createElement('div');
     card.className = 'media-card';
@@ -110,31 +106,28 @@ function createMediaCard(fileData) {
     mediaGrid.appendChild(card);
 }
 
-// 🆕 FIXED SMART SHORTCUT FILTER
 function filterSmartTag(selectedTag) {
-    // Pehle saari files load karo taaki fresh filtering ho sake
-    loadSavedFiles();
-    
-    const cards = document.querySelectorAll('.media-card');
+    loadSavedFiles(selectedTag);
+}
+
+// 🆕 FIXED SIDEBAR NAVIGATION ENGINE (ALL BUTTONS WORKING)
+function handleSidebarAction(action) {
+    toggleSidebar(); // Close sidebar first
     const emptyMsg = document.querySelector('.empty-msg');
-    let matchedCount = 0;
-
-    cards.forEach(card => {
-        const cardTag = card.getAttribute('data-tag');
-        if (cardTag === selectedTag) {
-            card.style.display = 'inline-block';
-            matchedCount++;
-        } else {
-            card.style.display = 'none';
-        }
-    });
-
-    if (emptyMsg) {
-        if (matchedCount === 0) {
+    
+    if (action === 'recent' || action === 'uploads' || action === 'offline') {
+        // Asli standard load method trigger karega taaki photos load hon
+        loadSavedFiles();
+    } else if (action === 'bin' || action === 'spam') {
+        document.getElementById('mediaGrid').innerHTML = ''; // Clear layout
+        if (emptyMsg) {
             emptyMsg.style.display = 'block';
-            emptyMsg.innerText = `No items found in "${selectedTag.toUpperCase()}"`;
-        } else {
-            emptyMsg.style.display = 'none';
+            emptyMsg.innerText = `Your ${action} folder is empty!`;
+        }
+    } else if (action === 'settings') {
+        if (confirm("🛠️ Devide Reset:\n\nClear all storage data?")) {
+            localStorage.removeItem('devide_files');
+            loadSavedFiles();
         }
     }
 }
@@ -206,7 +199,8 @@ function handleFabAction(type) {
         const folderName = prompt("Naye Folder ka naam:");
         if (folderName && folderName.trim() !== "") {
             const folderData = { id: Date.now(), name: folderName.trim(), src: '', type: 'folder', smartTag: 'none', personName: 'none' };
-            createMediaCard(folderData); saveFileToLocalStorage(folderData);
+            saveFileToLocalStorage(folderData);
+            loadSavedFiles();
         }
     } else if (type === 'scan') {
         const camInput = document.createElement('input');
@@ -217,7 +211,8 @@ function handleFabAction(type) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     const snapData = { id: Date.now(), name: "Scan_" + Date.now() + ".jpg", src: evt.target.result, type: 'image', smartTag: 'screenshot', personName: 'none' };
-                    createMediaCard(snapData); saveFileToLocalStorage(snapData);
+                    saveFileToLocalStorage(snapData);
+                    loadSavedFiles();
                 };
                 reader.readAsDataURL(file);
             }
@@ -227,7 +222,8 @@ function handleFabAction(type) {
         const docName = prompt(`Naya Google ${type.toUpperCase()}:`, `Untitled ${type}`);
         if (docName) {
             const dummyDoc = { id: Date.now(), name: docName + ` (.${type})`, src: '', type: 'doc', smartTag: 'none', personName: 'none' };
-            createMediaCard(dummyDoc); saveFileToLocalStorage(dummyDoc);
+            saveFileToLocalStorage(dummyDoc);
+            loadSavedFiles();
         }
     }
 }
@@ -245,30 +241,8 @@ document.addEventListener('click', () => {
     document.querySelectorAll('.card-dropdown').forEach(menu => menu.style.display = 'none');
 });
 
-function handleSidebarAction(action) {
-    toggleSidebar();
-    if (action === 'recent' || action === 'uploads' || action === 'offline') {
-        loadSavedFiles();
-    } else if (action === 'bin' || action === 'spam') {
-        document.getElementById('mediaGrid').innerHTML = '';
-        const emptyMsg = document.querySelector('.empty-msg');
-        if (emptyMsg) { emptyMsg.style.display = 'block'; emptyMsg.innerText = `Your ${action} folder is empty!`; }
-    } else if (action === 'settings') {
-        if (confirm("🛠️ Devide Reset:\n\nClear all storage?")) { localStorage.removeItem('devide_files'); loadSavedFiles(); }
-    }
-}
-
 function filterCategory(category) {
-    loadSavedFiles();
-    const cards = document.querySelectorAll('.media-card');
-    cards.forEach(card => {
-        const type = card.getAttribute('data-type');
-        if (category === 'all' || (category === 'photo' && type === 'image') || (category === 'doc' && type === 'doc')) {
-            card.style.display = 'inline-block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
+    loadSavedFiles(null, category);
 }
 
 function renameFileFromCard(e, id) {
@@ -280,7 +254,7 @@ function renameFileFromCard(e, id) {
         if (newName && newName.trim() !== "") {
             files = files.map(f => { if (f.id === id) f.name = newName; return f; });
             localStorage.setItem('devide_files', JSON.stringify(files));
-            document.getElementById(`title-${id}`).innerText = newName;
+            loadSavedFiles();
         }
     }
 }
@@ -307,25 +281,42 @@ function saveFileToLocalStorage(fileData) {
     files.push(fileData); localStorage.setItem('devide_files', JSON.stringify(files));
 }
 
-function loadSavedFiles() {
-    document.getElementById('mediaGrid').innerHTML = '';
+function loadSavedFiles(filterTag = null, filterCat = 'all') {
+    const mediaGrid = document.getElementById('mediaGrid');
+    mediaGrid.innerHTML = '';
+    
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
-    if (files.length > 0) {
-        files.forEach(fileData => createMediaCard(fileData));
+    let matchedFiles = files;
+
+    if (filterTag) {
+        matchedFiles = files.filter(f => f.smartTag === filterTag);
+    } 
+    else if (filterCat !== 'all') {
+        if (filterCat === 'photo') matchedFiles = files.filter(f => f.type === 'image');
+        if (filterCat === 'doc') matchedFiles = files.filter(f => f.type === 'doc');
+    }
+
+    const emptyMsg = document.querySelector('.empty-msg');
+    
+    if (matchedFiles.length > 0) {
+        if (emptyMsg) emptyMsg.style.display = 'none';
+        matchedFiles.forEach(fileData => createMediaCard(fileData));
     } else {
-        const emptyMsg = document.querySelector('.empty-msg');
-        if (emptyMsg) { emptyMsg.style.display = 'block'; emptyMsg.innerText = "No files uploaded yet. Click plus to add!"; }
+        if (emptyMsg) {
+            emptyMsg.style.display = 'block';
+            emptyMsg.innerText = filterTag ? `No items found in "${filterTag.toUpperCase()}" category!` : "No files found!";
+        }
     }
 }
 
 function deleteFile(id) {
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
     files = files.filter(file => file.id !== id); localStorage.setItem('devide_files', JSON.stringify(files));
-    const card = document.querySelector(`[data-id="${id}"]`); if (card) card.remove();
-    if (files.length === 0) loadSavedFiles();
+    loadSavedFiles();
 }
 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebarMenu');
     sidebar.style.width = sidebar.style.width === '250px' ? '0' : '250px';
-}
+                                }
+                               
