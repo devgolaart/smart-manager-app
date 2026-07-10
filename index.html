@@ -42,7 +42,6 @@
 
     <!-- MAIN APP WRAPPER -->
     <header>
-        <!-- Hamburger Menu Button (3 Lines) -->
         <div class="menu-trigger-btn" onclick="toggleSidebar()">&#9776;</div>
         <h1>Devide</h1>
         <p>Your AI-Powered Free Storage</p>
@@ -62,20 +61,52 @@
             <button class="tab-btn" onclick="filterCategory('doc')">Documents</button>
         </div>
 
-        <!-- Upload Button -->
-        <div class="upload-section">
-            <label for="fileUpload" class="upload-btn">
-                <span>➕ Upload File (Photo / PDF)</span>
-            </label>
-            <input type="file" id="fileUpload" accept="image/*, application/pdf" style="display: none;" multiple>
-        </div>
-
         <!-- Gallery / File Display Grid -->
         <div class="media-grid" id="mediaGrid">
-            <!-- Dynamic uploaded cards will appear here -->
             <p class="empty-msg">No files uploaded yet. Click plus to add!</p>
         </div>
     </main>
+
+    <!-- FLOATING ACTION BUTTON SYSTEM (DRIVE STYLE) -->
+    <div class="fab-container">
+        <!-- Overlay background jab options khulein -->
+        <div id="fabOverlay" class="fab-overlay" onclick="toggleFabMenu()"></div>
+
+        <!-- Pop-up Menu Options -->
+        <div id="fabOptions" class="fab-options">
+            <div class="fab-option-item" onclick="triggerFileUpload()">
+                <span class="fab-label">Google Slides</span>
+                <div class="fab-sub-icon style-slides">📊</div>
+            </div>
+            <div class="fab-option-item" onclick="triggerFileUpload()">
+                <span class="fab-label">Google Sheets</span>
+                <div class="fab-sub-icon style-sheets">💚</div>
+            </div>
+            <div class="fab-option-item" onclick="triggerFileUpload()">
+                <span class="fab-label">Google Docs</span>
+                <div class="fab-sub-icon style-docs">💙</div>
+            </div>
+            <div class="fab-option-item" onclick="triggerFileUpload()">
+                <span class="fab-label">Scan</span>
+                <div class="fab-sub-icon style-scan">📷</div>
+            </div>
+            <!-- Asli Upload System Ispe Chalega -->
+            <label for="fileUpload" class="fab-option-item" style="margin: 0; cursor: pointer;">
+                <span class="fab-label">Upload</span>
+                <div class="fab-sub-icon style-upload">📤</div>
+            </label>
+            <div class="fab-option-item" onclick="alert('Creating new folder...')">
+                <span class="fab-label">Folder</span>
+                <div class="fab-sub-icon style-folder">📁</div>
+            </div>
+        </div>
+
+        <!-- Main Big Floating Button -->
+        <button id="mainFabBtn" class="fab-main-btn" onclick="toggleFabMenu()">➕</button>
+        
+        <!-- Hidden input files select karne ke liye -->
+        <input type="file" id="fileUpload" accept="image/*, application/pdf" style="display: none;" multiple>
+    </div>
 
     <script src="app.js"></script>
 </body>
