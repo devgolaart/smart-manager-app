@@ -1,4 +1,4 @@
-// Devide App - Drive Style Folder Grid System
+// Devide App - Fully Functional Sidebar & Card Grid
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSavedFiles();
@@ -36,7 +36,7 @@ document.getElementById('fileUpload').addEventListener('change', function(event)
     }
 });
 
-// Drive Layout Card with Local Menu
+// Drive Layout Card Generator
 function createMediaCard(fileData) {
     const emptyMsg = document.querySelector('.empty-msg');
     if (emptyMsg) emptyMsg.style.display = 'none';
@@ -45,9 +45,9 @@ function createMediaCard(fileData) {
     const card = document.createElement('div');
     card.className = 'media-card';
     card.setAttribute('data-id', fileData.id);
+    card.setAttribute('data-type', fileData.type); // Filter ke liye type jodha h
     
-    // Google Drive jaisa premium dark/light card design
-    card.style.cssText = 'border: 1px solid #e0e0e0; border-radius: 12px; padding: 12px; margin: 8px; text-align: left; background-color: #f8f9fa; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative; display: inline-block; width: 155px; vertical-align: top;';
+    card.style.cssText = 'border: 1px solid #e0e0e0; border-radius: 12px; padding: 12px; margin: 8px; text-align: left; background-color: #f8f9fa; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative; display: inline-block; width: 140px; vertical-align: top;';
 
     let contentHTML = '';
 
@@ -73,10 +73,8 @@ function createMediaCard(fileData) {
         `;
     }
 
-    // Dropdown Action Menu for individual Card
     card.innerHTML = contentHTML + `
         <p id="title-${fileData.id}" style="font-size: 13px; font-weight: 500; margin: 8px 0 0 0; color: #3c4043; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">${fileData.name}</p>
-        
         <div id="dropdown-${fileData.id}" class="card-dropdown" style="display: none; position: absolute; top: 30px; right: 10px; background: #ffffff; border: 1px solid #dadce0; border-radius: 8px; width: 120px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); z-index: 100;">
             <div onclick="renameFileFromCard(event, ${fileData.id})" style="padding: 8px 12px; font-size: 13px; color: #3c4043; cursor: pointer; border-bottom: 1px solid #f1f3f4;">✏️ Rename</div>
             <div onclick="deleteFileFromCard(event, ${fileData.id})" style="padding: 8px 12px; font-size: 13px; color: #d93025; cursor: pointer;">🗑️ Delete</div>
@@ -86,25 +84,72 @@ function createMediaCard(fileData) {
     mediaGrid.appendChild(card);
 }
 
-// Card ke individual three dots toggle karne ke liye
 function toggleCardMenu(e, id) {
     e.stopPropagation();
-    // Saare khule huye dropdowns ko pehle band karo
     document.querySelectorAll('.card-dropdown').forEach(menu => {
         if(menu.id !== `dropdown-${id}`) menu.style.display = 'none';
     });
-    
     const targetMenu = document.getElementById(`dropdown-${id}`);
     targetMenu.style.display = targetMenu.style.display === 'block' ? 'none' : 'block';
 }
 
-// Screen par kahi bhi click ho toh menu band ho jaye
 document.addEventListener('click', () => {
     document.querySelectorAll('.card-dropdown').forEach(menu => menu.style.display = 'none');
 });
 
-// ====== CARD MENUS ACTIONS ======
+// ====== SIDEBAR CLICK NAVIGATION LOGIC ======
+function handleSidebarAction(action) {
+    toggleSidebar(); // Pehle menu close karo
+    const emptyMsg = document.querySelector('.empty-msg');
+    const cards = document.querySelectorAll('.media-card');
+    
+    if (action === 'recent' || action === 'uploads') {
+        // Saari files dikhao
+        loadSavedFiles(); 
+        alert(`Showing your ${action} files!`);
+    } else if (action === 'bin' || action === 'spam') {
+        // Grid ko khali dikhao kyunki abhi dustbin folder local me khali h
+        document.getElementById('mediaGrid').innerHTML = '';
+        if (emptyMsg) {
+            emptyMsg.style.display = 'block';
+            emptyMsg.innerText = `Your ${action} folder is empty!`;
+        }
+    } else if (action === 'offline') {
+        alert("🔒 All uploaded files are saved Offline in your local device memory!");
+    } else if (action === 'settings') {
+        alert("⚙️ Devide Settings: Clear Local Storage to wipe data.");
+    }
+}
 
+// Top Category Tabs Filter (Working Setup)
+function filterCategory(category) {
+    const cards = document.querySelectorAll('.media-card');
+    const emptyMsg = document.querySelector('.empty-msg');
+    let foundCount = 0;
+
+    cards.forEach(card => {
+        const type = card.getAttribute('data-type');
+        if (category === 'all' || type === category) {
+            card.style.display = 'inline-block';
+            foundCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // Active button color visualization
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    if(foundCount === 0 && emptyMsg) {
+        emptyMsg.style.display = 'block';
+        emptyMsg.innerText = `No ${category}s found!`;
+    } else if (emptyMsg) {
+        emptyMsg.style.display = 'none';
+    }
+}
+
+// ====== CARD MENUS ACTIONS ======
 function renameFileFromCard(e, id) {
     e.stopPropagation();
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
@@ -130,8 +175,6 @@ function deleteFileFromCard(e, id) {
     }
 }
 
-// ====== CORE ENGINES ======
-
 function openAdvancedFullView(src) {
     let modal = document.getElementById('simpleModal');
     if (!modal) {
@@ -153,9 +196,16 @@ function saveFileToLocalStorage(fileData) {
 }
 
 function loadSavedFiles() {
+    document.getElementById('mediaGrid').innerHTML = ''; // Grid clear for clean reloading
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
     if (files.length > 0) {
         files.forEach(fileData => createMediaCard(fileData));
+    } else {
+        const emptyMsg = document.querySelector('.empty-msg');
+        if (emptyMsg) {
+            emptyMsg.style.display = 'block';
+            emptyMsg.innerText = "No files uploaded yet. Click plus to add!";
+        }
     }
 }
 
@@ -168,11 +218,10 @@ function deleteFile(id) {
     if (card) card.remove();
     
     if (files.length === 0) {
-        const emptyMsg = document.querySelector('.empty-msg');
-        if (emptyMsg) emptyMsg.style.display = 'block';
+        loadSavedFiles();
     }
 }
-// Sidebar open aur close karne ka control function
+
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebarMenu');
     if (sidebar.style.width === '250px') {
