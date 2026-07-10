@@ -1,4 +1,4 @@
-// Devide Advanced Engine - Smart AI Gallery Filtering System
+// Devide Advanced Core - People Recognition Grid & Smart Filter Engine
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSavedFiles();
@@ -7,11 +7,17 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('fileUpload').addEventListener('change', function(event) {
     const files = event.target.files;
     if (files.length > 0) {
-        // Photo upload hote hi smart category poochne ke liye prompt box
+        // AI Prompter asking for Smart Tags AND Person Name
         const smartTag = prompt("Is image ki category chunhein:\n(people, selfie, nature, food, screenshot)").toLowerCase().trim();
         
+        let personName = "Unknown";
+        if (smartTag === 'people') {
+            personName = prompt("👤 Is bande/bandi ka naam likhein:");
+            if(!personName || personName.trim() === "") personName = "Unknown";
+        }
+
         const validTags = ['people', 'selfie', 'nature', 'food', 'screenshot'];
-        const finalTag = validTags.includes(smartTag) ? smartTag : 'people'; // default tag if typing wrong
+        const finalTag = validTags.includes(smartTag) ? smartTag : 'people';
 
         Array.from(files).forEach(file => {
             if (file.type.startsWith('image/')) {
@@ -22,7 +28,8 @@ document.getElementById('fileUpload').addEventListener('change', function(event)
                         name: file.name,
                         src: e.target.result,
                         type: 'image',
-                        smartTag: finalTag // Smart target saved here
+                        smartTag: finalTag,
+                        personName: personName.trim() // Person name hook saved here
                     };
                     createMediaCard(fileData);
                     saveFileToLocalStorage(fileData);
@@ -34,7 +41,8 @@ document.getElementById('fileUpload').addEventListener('change', function(event)
                     name: file.name,
                     src: '',
                     type: 'doc',
-                    smartTag: 'none'
+                    smartTag: 'none',
+                    personName: 'none'
                 };
                 createMediaCard(fileData);
                 saveFileToLocalStorage(fileData);
@@ -52,7 +60,7 @@ function createMediaCard(fileData) {
     card.className = 'media-card';
     card.setAttribute('data-id', fileData.id);
     card.setAttribute('data-type', fileData.type);
-    card.setAttribute('data-tag', fileData.smartTag || 'none'); // Attribute for quick search
+    card.setAttribute('data-tag', fileData.smartTag || 'none');
     
     card.style.cssText = 'border: 1px solid #e0e0e0; border-radius: 12px; padding: 12px; margin: 8px; text-align: left; background-color: #f8f9fa; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative; display: inline-block; width: 140px; vertical-align: top;';
 
@@ -101,7 +109,60 @@ function createMediaCard(fileData) {
     mediaGrid.appendChild(card);
 }
 
-// 🆕 SMART SHORTCUT CLICK FILTER FUNCTION
+// 🆕 OPEN PEOPLE SYSTEM DYNAMIC SCREEN GALLERY
+function openPeopleGallery() {
+    document.getElementById('mainAppContent').style.display = 'none';
+    const peopleContainer = document.getElementById('peopleGalleryModal');
+    peopleContainer.style.display = 'block';
+    
+    const peopleGrid = document.getElementById('peopleGridSystem');
+    peopleGrid.innerHTML = ''; // Reset Grid
+    
+    let files = JSON.parse(localStorage.getItem('devide_files')) || [];
+    // Only fetch people tagged items
+    let peopleFiles = files.filter(f => f.smartTag === 'people');
+
+    if(peopleFiles.length === 0) {
+        peopleGrid.innerHTML = `<p style="grid-column: span 3; color: #aaa; text-align: center; margin-top: 5px;">No people profiles saved yet. Upload images with 'people' tag!</p>`;
+        return;
+    }
+
+    peopleFiles.forEach(person => {
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        card.setAttribute('data-name', person.personName.toLowerCase()); // Search parameter mapping
+        card.innerHTML = `
+            <div class="person-img-wrapper">
+                <img src="${person.src}" alt="${person.personName}">
+            </div>
+            <p>${person.personName}</p>
+        `;
+        peopleGrid.appendChild(card);
+    });
+}
+
+function closePeopleGallery() {
+    document.getElementById('peopleGalleryModal').style.display = 'none';
+    document.getElementById('mainAppContent').style.display = 'block';
+    loadSavedFiles();
+}
+
+// 🆕 INNER LIVE SEARCH ENGINE FOR PEOPLE NAMES
+function searchPeopleByName() {
+    const searchText = document.getElementById('peopleSearchInput').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.person-card');
+
+    cards.forEach(card => {
+        const nameAttr = card.getAttribute('data-name');
+        if (nameAttr.includes(searchText)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Standard Filtering Systems
 function filterSmartTag(selectedTag) {
     const cards = document.querySelectorAll('.media-card');
     const emptyMsg = document.querySelector('.empty-msg');
@@ -140,9 +201,8 @@ function handleFabAction(type) {
     if (type === 'folder') {
         const folderName = prompt("Naye Folder ka naam:");
         if (folderName && folderName.trim() !== "") {
-            const folderData = { id: Date.now(), name: folderName.trim(), src: '', type: 'folder', smartTag: 'none' };
-            createMediaCard(folderData);
-            saveFileToLocalStorage(folderData);
+            const folderData = { id: Date.now(), name: folderName.trim(), src: '', type: 'folder', smartTag: 'none', personName: 'none' };
+            createMediaCard(folderData); saveFileToLocalStorage(folderData);
         }
     } else if (type === 'scan') {
         const camInput = document.createElement('input');
@@ -152,7 +212,7 @@ function handleFabAction(type) {
             if(file) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
-                    const snapData = { id: Date.now(), name: "Scan_" + Date.now() + ".jpg", src: evt.target.result, type: 'image', smartTag: 'screenshot' };
+                    const snapData = { id: Date.now(), name: "Scan_" + Date.now() + ".jpg", src: evt.target.result, type: 'image', smartTag: 'screenshot', personName: 'none' };
                     createMediaCard(snapData); saveFileToLocalStorage(snapData);
                 };
                 reader.readAsDataURL(file);
@@ -162,7 +222,7 @@ function handleFabAction(type) {
     } else if (type === 'docs' || type === 'sheets' || type === 'slides') {
         const docName = prompt(`Naya Google ${type.toUpperCase()}:`, `Untitled ${type}`);
         if (docName) {
-            const dummyDoc = { id: Date.now(), name: docName + ` (.${type})`, src: '', type: 'doc', smartTag: 'none' };
+            const dummyDoc = { id: Date.now(), name: docName + ` (.${type})`, src: '', type: 'doc', smartTag: 'none', personName: 'none' };
             createMediaCard(dummyDoc); saveFileToLocalStorage(dummyDoc);
         }
     }
@@ -195,23 +255,17 @@ function handleSidebarAction(action) {
 }
 
 function filterCategory(category) {
-    loadSavedFiles(); // Reset grid first
+    loadSavedFiles();
     const cards = document.querySelectorAll('.media-card');
-    const emptyMsg = document.querySelector('.empty-msg');
-    let foundCount = 0;
-
     cards.forEach(card => {
         const type = card.getAttribute('data-type');
         if (category === 'all' || (category === 'photo' && type === 'image') || (category === 'doc' && type === 'doc')) {
             card.style.display = 'inline-block';
-            foundCount++;
         } else {
             card.style.display = 'none';
         }
     });
-
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    if (event && event.currentTarget) event.currentTarget.classList.add('active');
 }
 
 function renameFileFromCard(e, id) {
@@ -261,6 +315,7 @@ function loadSavedFiles() {
     }
 }
 
+// Global Core Clear Engine
 function deleteFile(id) {
     let files = JSON.parse(localStorage.getItem('devide_files')) || [];
     files = files.filter(file => file.id !== id); localStorage.setItem('devide_files', JSON.stringify(files));
@@ -271,5 +326,5 @@ function deleteFile(id) {
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebarMenu');
     sidebar.style.width = sidebar.style.width === '250px' ? '0' : '250px';
-                              }
-            
+}
+    
