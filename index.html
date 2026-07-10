@@ -27,7 +27,6 @@
             <a href="#" onclick="handleSidebarAction('help')"><span class="icon">❓</span> Help and feedback</a>
         </div>
         
-        <!-- STORAGE INDICATOR BAR -->
         <div class="storage-section">
             <div style="display: flex; align-items: center; margin-bottom: 5px; font-size: 13px; color: #aaa;">
                 <span style="margin-right: 8px;">☁️</span> Storage
@@ -47,18 +46,18 @@
         <p>Your AI-Powered Free Storage</p>
     </header>
 
-    <main class="container">
+    <main class="container" id="mainAppContent">
         <!-- Search Bar -->
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Search photos, faces, or docs...">
             <button id="voiceBtn" class="btn-icon">🎤</button>
         </div>
 
-        <!-- 🆕 SMART ROUND GALLERY SHORTCUTS (HORIZONTAL SCROLL) -->
+        <!-- SMART ROUND GALLERY SHORTCUTS -->
         <div class="smart-shortcuts-container">
-            <div class="shortcut-item" onclick="filterSmartTag('people')">
-                <div class="shortcut-circle">👥</div>
-                <span>People</span>
+            <div class="shortcut-item" onclick="openPeopleGallery()">
+                <div class="shortcut-circle" style="background-color: #e8f0fe; border-color: #1a73e8;">👥</div>
+                <span style="color: #1a73e8; font-weight: bold;">People</span>
             </div>
             <div class="shortcut-item" onclick="filterSmartTag('selfie')">
                 <div class="shortcut-circle">🤳</div>
@@ -85,11 +84,29 @@
             <button class="tab-btn" onclick="filterCategory('doc')">Documents</button>
         </div>
 
-        <!-- Gallery / File Display Grid -->
+        <!-- Gallery Grid -->
         <div class="media-grid" id="mediaGrid">
             <p class="empty-msg">No files uploaded yet. Click plus to add!</p>
         </div>
     </main>
+
+    <!-- 🆕 DYNAMIC PEOPLE GALLERY VIEW MODAL -->
+    <div id="peopleGalleryModal" class="people-view-container" style="display: none;">
+        <div class="people-header">
+            <span class="back-arrow-btn" onclick="closePeopleGallery()">←</span>
+            <h2>People & Faces</h2>
+        </div>
+        
+        <!-- People Inner Search Bar -->
+        <div class="people-search-box">
+            <input type="text" id="peopleSearchInput" oninput="searchPeopleByName()" placeholder="🔍 Type a person's name to filter...">
+        </div>
+
+        <!-- People Grid for Face Cards -->
+        <div class="people-grid" id="peopleGridSystem">
+            <!-- Dynamically extracted people profiles will be loaded here -->
+        </div>
+    </div>
 
     <!-- FLOATING ACTION BUTTON SYSTEM -->
     <div class="fab-container">
